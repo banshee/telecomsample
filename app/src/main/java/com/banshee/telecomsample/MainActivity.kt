@@ -57,9 +57,9 @@ class MainActivity : AppCompatActivity() {
 //        val comName = ComponentName(application, SampleConnectionService.javaClass)
 //        val phoneAccountHandle = PhoneAccountHandle(comName, "main")
         call1 = SampleConnection(SampleConnectionService.telecomManager(this),
-            SampleConnectionService.phoneAccountHandle(this), "502")
-        call2 = SampleConnection(SampleConnectionService.telecomManager(this),
             SampleConnectionService.phoneAccountHandle(this), "501")
+        call2 = SampleConnection(SampleConnectionService.telecomManager(this),
+            SampleConnectionService.phoneAccountHandle(this), "502")
         binding.call1 = call1
         binding.call2 = call2
     }

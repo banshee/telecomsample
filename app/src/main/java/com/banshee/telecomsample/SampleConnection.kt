@@ -16,8 +16,13 @@ class SampleConnection(
     val callId: String
 ) : Connection() {
     companion object {
-        val LOGTAG = "sqq"
+        const val LOGTAG = "qqr SampleConnection"
         val allConnections = mutableListOf<SampleConnection>()
+
+        fun doForOthers(exclude: SampleConnection, fn: (t: SampleConnection) -> Unit) {
+            val otherConnections = allConnections.filter { it != exclude }
+            otherConnections.forEach(fn)
+        }
 
         fun setConferenceable(target: SampleConnection, items: List<SampleConnection>) {
             val otherConnections = items.filter { it != target }
@@ -30,9 +35,9 @@ class SampleConnection(
     }
 
     init {
-        println("qqr SampleConnection#constructor")
+        Log.d(SampleConnection.LOGTAG, "${object {}.javaClass.enclosingConstructor.name}")
         this.connectionCapabilities =
-                CAPABILITY_HOLD
+                CAPABILITY_SUPPORT_HOLD
         setCallerDisplayName("Seamus Ó Muradh", PRESENTATION_ALLOWED)
         setInitialized()
         allConnections.add(this)
@@ -55,17 +60,22 @@ class SampleConnection(
         telecomManager.placeCall(uri, callBundle)
         this.setRinging()
         this.setAddress(uri, PRESENTATION_ALLOWED)
+        doForOthers(this, { it.setOnHold() })
     }
 
     fun confirmed() {
-        Log.d(LOGTAG, "confirmed $callId")
         this.setActive()
-        this.connectionCapabilities = connectionCapabilities or Connection.CAPABILITY_HOLD
+        this.connectionCapabilities =
+                (connectionCapabilities or Connection.CAPABILITY_HOLD or Connection.CAPABILITY_MUTE)
+        this.setAddress(Uri.fromParts("tel","13242342342342", ""), PRESENTATION_ALLOWED)
+        this.setCallerDisplayName("display anme  for ${this.callId}", PRESENTATION_ALLOWED)
+//        Log.d(LOGTAG, "confirmed $callId ${this.connectionCapabilities}")
     }
 
     fun disconnect() {
         Log.d(LOGTAG, "disconnect $callId")
         this.setDisconnected(DisconnectCause(0, "button pushed"))
+        this.destroy()
     }
 
     override fun onAnswer() {
@@ -87,5 +97,16 @@ class SampleConnection(
     override fun onShowIncomingCallUi() {
         Log.d(LOGTAG, "onShowIncomingCallUi $callId")
         super.onShowIncomingCallUi()
+    }
+
+    override fun onHold() {
+        super.onHold()
+        this.setOnHold()
+        Log.d(LOGTAG, "onHold $callId")
+    }
+
+    override fun onSeparate() {
+        super.onSeparate()
+        Log.d(SampleConference.LOGTAG, "${object {}.javaClass.enclosingMethod.name}")
     }
 }

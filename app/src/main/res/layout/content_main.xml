@@ -9,6 +9,7 @@
         <variable
                 name="call1"
                 type="com.banshee.telecomsample.SampleConnection"/>
+
         <variable
                 name="call2"
                 type="com.banshee.telecomsample.SampleConnection"/>
@@ -38,12 +39,12 @@
                     android:id="@+id/registerAccount"
                     android:onClick="registerAccount"/>
 
-
             <include
                     layout="@layout/call_buttons"
                     bind:connection="@{call1}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
+
             <include
                     layout="@layout/call_buttons"
                     bind:connection="@{call2}"
