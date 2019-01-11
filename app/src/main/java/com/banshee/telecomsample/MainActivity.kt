@@ -14,11 +14,22 @@ import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest.permission
 import android.Manifest.permission.READ_PHONE_STATE
+import android.annotation.SuppressLint
+import android.content.Context
+import android.databinding.DataBindingUtil
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.telecom.PhoneAccount
+import android.telecom.PhoneAccountHandle
+import com.banshee.telecomsample.databinding.ContentMainBinding
 
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        var call1: SampleConnection? = null
+        var call2: SampleConnection? = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,6 +50,18 @@ class MainActivity : AppCompatActivity() {
             ),
             0
         )
+        val binding: ContentMainBinding = DataBindingUtil.setContentView(
+            this, R.layout.content_main)
+
+//        val telecomManager = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+//        val comName = ComponentName(application, SampleConnectionService.javaClass)
+//        val phoneAccountHandle = PhoneAccountHandle(comName, "main")
+        call1 = SampleConnection(SampleConnectionService.telecomManager(this),
+            SampleConnectionService.phoneAccountHandle(this), "502")
+        call2 = SampleConnection(SampleConnectionService.telecomManager(this),
+            SampleConnectionService.phoneAccountHandle(this), "501")
+        binding.call1 = call1
+        binding.call2 = call2
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -57,6 +80,7 @@ class MainActivity : AppCompatActivity() {
         SampleConnectionService.register(this)
     }
 
+    @SuppressLint("MissingPermission")
     fun startOutboundCall(button: View) {
         val callBundle = Bundle();
         callBundle.putString(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, "SampleConnectionService");

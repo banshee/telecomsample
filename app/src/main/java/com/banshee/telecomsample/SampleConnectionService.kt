@@ -16,7 +16,7 @@ class SampleConnectionService : ConnectionService() {
             return telecomManager
         }
 
-        private fun phoneAccountHandle(context: Context): PhoneAccountHandle {
+        fun phoneAccountHandle(context: Context): PhoneAccountHandle {
             var componentName = ComponentName(context, SampleConnectionService.javaClass.enclosingClass.canonicalName)
             var phoneAccountHandle = PhoneAccountHandle(componentName, "main")
             return phoneAccountHandle
@@ -24,9 +24,8 @@ class SampleConnectionService : ConnectionService() {
 
         private fun phoneAccount(phoneAccountHandle: PhoneAccountHandle): PhoneAccount? {
             var phoneAccount = PhoneAccount.Builder(phoneAccountHandle, "TelecomSampleLabel")
-                .setCapabilities(PhoneAccount.CAP)
-//                .setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
-//                .setCapabilities(PhoneAccount.CAPABILITY_CONNECTION_MANAGER)// https://developer.android.com/reference/android/telecom/PhoneAccount#CAPABILITY_SELF_MANAGED - we handle our own calls
+                .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER)
+                .addSupportedUriScheme("tel")
                 .build()
             return phoneAccount
         }
@@ -45,7 +44,7 @@ class SampleConnectionService : ConnectionService() {
         connectionManagerPhoneAccount: PhoneAccountHandle?,
         request: ConnectionRequest?
     ): Connection {
-        return SampleConnection()
+        return MainActivity.call1!!;
     }
 
     override fun onCreateOutgoingConnectionFailed(
